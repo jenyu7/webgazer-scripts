@@ -1,0 +1,104 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Webgazer1</title>
+    <!-- call css -->
+    <link href="css/eye-tracking.css" rel="stylesheet" type="text/css">
+    </link>
+    <link href="css/jspsych.css" rel="stylesheet" type="text/css">
+    </link>
+    <link href="css/binary-choice.css" rel="stylesheet" type="text/css">
+    </link>
+</head>
+<style>
+
+</style>
+
+<body>
+    <div
+    style="background-color: white;color:black; padding-bottom: 50px; padding-left: 50px;padding-right: 50px; padding-top: 50px; font-size: larger; font-family:Arial, Helvetica, sans-serif">
+    <img src="img/ohioSeal.png" alt="Flowers in Chania" width="200" height="200" style="vertical-align:top">
+    <h1 style="text-align: center;"> Welcome to the study! </h1>
+    <br></br>
+     <b>
+        <p style="color: black"> Please click the button below to proceed and participate in this study. If you do
+            not wish to participate, please close out your browser window. </p>
+    </b>
+
+    <p style="text-align: center;"></p>
+    <div style="text-align:right;">
+        <input type="checkbox" class="checkmark">
+        I <b>AGREE</b> with the above consent.
+        <br><br><br>
+        <button class="goExp" style="font-size: larger;">
+            Continue
+        </button>
+    </div>
+</div>
+
+    <!-- <button class="goExp">Continue</button> -->
+</body>
+
+<!-- call the library  -->
+<script src="js/lib/jquery-3.5.0.min.js"></script>
+<script src="js/lib/bowser.js"></script>
+<script src="js/lib/jspsych.js"></script>
+<script src="js/lib/js-combinatrorics-0.5.5.min.js"></script>
+<script src="js/lib/webgazer.js"></script>
+<script src="js/lib/jcanvas.min.js"></script>
+<script src="js/utilsHelper.js"></script>
+<!-- call the plugins -->
+<script src="js/plugins/jspsych-html-keyboard-response.js"></script>
+<script src="js/plugins/jspsych-image-slider-response.js"></script>
+<script src="js/plugins/jspsych-image-keyboard-response.js"></script>
+<script src="js/plugins/jspsych-survey-text.js"></script>
+<script src="js/plugins/jspsych-call-function.js"></script>
+<script src="js/plugins/decoy-gamble.js"></script>
+<script src="js/plugins/binary-choice.js"></script>
+<script src="js/plugins/jspsych-fullscreen.js"></script>
+<script src="js/plugins/eye-tracking.js"></script>
+<!-- call your experiement script -->
+<script src="file/stimuli.js"></script>
+<script src="js/main_task.js"></script>
+<script>
+    const goExp = document.querySelector(".goExp");
+
+    function showAlert() {
+        alert("Please click the button");
+    }
+
+
+    $('body').on('click', '.goExp', function () {
+        showAlert();
+    }).on('click', '.checkmark', function (event) {
+        goExp.addEventListener('click', () => {
+            ensureWebcam(() => startExperiment());
+        });
+        event.stopPropagation();
+    });
+
+    function ensureWebcam(callback) {
+        $('body').html('<p class="center", style="font-family:Arial, Helvetica, sans-serif">Checking webcam ...</p>');
+        window.navigator.mediaDevices.getUserMedia({ video: true })
+        .then(function(stream) {
+            stream.getTracks().forEach(track => track.stop());
+            callback();
+        })
+        .catch(function() {
+            alert('Cannot open webcam.\nIs it blocked? This app requires webcam.');
+            location.reload();
+        });
+    }
+
+</script>
+
+<style>
+    .center {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+    }
+</style>
+
+</html>
