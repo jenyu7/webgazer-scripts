@@ -207,10 +207,10 @@ var inital_eye_calibration = {
       doCalibration: true,
       doValidation: true,
       calibrationDots:  realCaliDot , 
-      calibrationDuration: 3, 
+      calibrationDuration: 4, 
       doValidation: true,
       validationDots:  realCaliDot , 
-      validationDuration: 2,
+      validationDuration: 3,
       validationTol: validationTols[calibrationAttempt],
       // showPoint: true,
       on_finish: function (data) {
@@ -721,6 +721,8 @@ function closeFullscreen() {
 
 
 var on_finish_callback = function () {
+  
+  
  // jsPsych.data.displayData();
   jsPsych.data.addProperties({
     browser_name: bowser.name,
@@ -733,6 +735,8 @@ var on_finish_callback = function () {
     innerWidth: window.innerWidth,
     innerHeight: window.innerHeight
   });
+  // save data
+  jsPsych.data.get().localSave('json', 'sample-data.json');
   var data = JSON.stringify(jsPsych.data.get().values());
   $.ajax({
       type: "POST",
@@ -749,8 +753,6 @@ var on_finish_callback = function () {
 }
 
 var trialcounter;
-
-
 
 
 
