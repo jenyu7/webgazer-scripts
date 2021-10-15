@@ -6,7 +6,7 @@ const nchoices = 1;
 const fixation_duration = 500;
 const nprac = 3;
 const nImageInst = 2;
-const realCaliDot = 5;
+const realCaliDot = 13;
 
 
 var subject_id = jsPsych.randomization.randomID(7);
@@ -206,10 +206,10 @@ var inital_eye_calibration = {
       doCalibration: true,
       doValidation: true,
       calibrationDots:  realCaliDot , 
-      calibrationDuration: 4, 
+      calibrationDuration: 3, 
       doValidation: true,
       validationDots:  realCaliDot , 
-      validationDuration: 3,
+      validationDuration: 2,
       validationTol: validationTols[calibrationAttempt],
       // showPoint: true,
       on_finish: function (data) {
