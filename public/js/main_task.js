@@ -6,7 +6,7 @@ const nchoices = 1;
 const fixation_duration = 500;
 const nprac = 3;
 const nImageInst = 2;
-const realCaliDot = 1;
+const realCaliDot = 5;
 
 
 var subject_id = jsPsych.randomization.randomID(7);
@@ -16,8 +16,6 @@ var exp_images = [];
 for (var i = 0; i < nrating; i++) {
   exp_images.push('../img/FoodImages/foodStimulus_' + i + '.jpg');
 }
-
-
 
 
 /** load all the images, and remember to preload before starting the egitxperiment */
@@ -195,7 +193,8 @@ var init_flag = function () {
 };
 
 var validationTols = [130, 165, 200];
-var validationAccuracys = [0.8, 0.7, 0.6];
+// var validationAccuracys = [0.8, 0.7, 0.6];
+var validationAccuracys = [0.6, 0.5, 0.4];
 
 /** first we need a calibration and validation step before entering into the main choice task */
 var inital_eye_calibration = {
@@ -234,441 +233,22 @@ var inital_eye_calibration = {
 
 
 
-
-var experimentOverview = {
-  type: 'html-keyboard-response',
-  on_start: function () {
-    webgazer.pause(),
-      webgazer.clearData()
-  },
-  stimulus: `<div> <font size=120%; font color = 'green';>Experiment Overview </font><br/>
-                                                     <br><br/>
-                         Success! The calibration and validation were successful. <br/>
-                          Now, we will begin with the study. In Today's study, you will be making a series of decisions about snack foods.<br/> 
-                          There will be multiple parts to the study, and you will receive instructions before each new part. <br/>
-                          You will earn a fixed fee of <b>$7</b> for completing the study.<br/>
-                                                        <br><br/>
-                          When you are ready, press the  <b>SPACE BAR</b> to continue. </div>`,
-  choices: ['spacebar'],
-  post_trial_gap: 500,
-}
-
-
-
-
-
-/** rating */
-
-var ratingOverview = {
-  type: 'html-keyboard-response',
-  on_start:   () => document.body.style.cursor = 'pointer',
-  stimulus: `<div> <font size=120%; font color = 'green';>Rating task</font><br/>
-                                       <br><br/>
-             Now, you will make decisions about each snack food one by one. <br/> 
-             For each snack food, please rate it on a scale from 0 to 10 based on how much you would like to eat this food right now.<br/>
-             A 0 means that you would neither like nor dislike to eat this food.  <br/> 
-             When choosing whether to eat this food or not, you would be willing to flip a coin.   <br/> 
-             A 10 means that you would really love to eat this food. <br/> 
-             If you dislike a food and would not want to eat it, then click DISLIKE. <br/> 
-             During the task, you need to use your mouse to move the slider to your desired rating. <br/> 
-                                          <br><br/>
-            When you are ready, press the  <b>SPACE BAR</b> to start.  </div>`,
-  choices: ['spacebar'],
-  post_trial_gap: 500,
-};
-
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-ratings_images = jsPsych.randomization.shuffle(exp_images);
-var ratings = {
-  type: 'image-slider-response',
-  stimulus_height: 320,
-  stimulus_width: 450,
-  timeline: ratings_images.map(img => ({
-    stimulus: img
-  })),
-  labels: ['0', '1', '2', '3', '4', '5','6','7','8','9','10'],
-  min: 0,
-  max: 10,
-  start: () => getRandomInt(0, 5),
-  require_movement: true,
-  // prompt: '<p>Willingness to donate.</p>',
-  slider_width: 500,
-  response_ends_trial: true,
-  on_finish: (data) => {
-    if (data.rating > 0) {
-      charity_choice_images.push(data.stimulus);
-    }
-    if (data.rating >= 0) {
-      charity_choice_images_zero.push(data.stimulus);
-    }
-  }
-};
-
-
-
-var choiceOverview = {
-  type: 'html-keyboard-response',
-  stimulus: `<div><font size=120%; font color = 'green';>Food preference </font><br/>
-                                        <br><br/>
-            In this part of the study you will be choosing between snack foods. <br/>    
-            Each round, you will see two snack foods on the screen. <br/>    
-            You have to choose which snack food you would prefer to eat. <br/>   
-            To select the left food, press the <b><font color='green'>F</font></b> key. <br/>
-            To select the right food, press  the <b><font color='green'>J</font></b> key. <br/>
-            After each choice, stare at the red circle at the center of the screen.  <br/>
-            <br><br/>
-           When you are ready, press the  <b>SPACE BAR</b> to continue.  </div>`,
-  choices: ['spacebar'],
-  post_trial_gap: 500,
-  on_finish: () => document.body.style.cursor = 'none'
-}
-
-
-var recalibrationInstruction = {
-  type: "html-keyboard-response",
-  on_start: function ()  {
-    webgazer.resume(),
-   document.body.style.cursor = 'none'
-  },
-  stimulus: `<div>We need to redo the calibration and validation before you begin with the choice task. </br>
-   As before, make sure you stare at each dot until it disappears and make sure you don’t move your head.</br>
-   <br></br>
-   Please press <b>SPACE BAR</b> when you are ready to begin.</div>`,
-  choices: ['spacebar'],
-  post_trial_gap: 500,
-};
-
-var recalibration = {
-  timeline: [
-    recalibrationInstruction,
-    {
-      type: "eye-tracking",
-      doCalibration: true,
-      calibrationDots: realCaliDot,
-      calibrationDuration: 3,
-      doValidation: true,
-      validationDots: realCaliDot,
-      validationDuration: 2,
-      validationTol: 200
-    }
-  ],
-};
-
-
-
-var choiceInstructionReinforce = {
-  type: 'html-keyboard-response',
-  stimulus: `<div><font size=120%; font color = 'green';>Food preference</font><br/>
-                                        <br><br/>
-       Now, we will begin with the choice task. Please keep your head still, otherwise we may have to redo the calibration and validation.<br/>
-       There will be a break halfway through the task. During the break you can move your head if you need to.    <br/>
-       As a quick reminder, you are choosing which food you would prefer to eat: <br/>
-       If you want to eat to the left food,  press  the <b><font color='green'>F</font></b> key; <br/>
-       If you want to eat to the right food,  press the <b><font color='green'>J</font></b>  key;<br/>
-                  <br><br/>
-       After each choice, make sure to stare at the red circles that will appear on the screen, until they disappear.  <br/>
-       This is part of ongoing adjustments to the eye-tracking.    <br/>
-       <br><br/>
-       NOTE: If the computer thinks that you are looking somewhere other than directly at the red dot,   <br/>
-       you may need to redo the calibration and validation process, slowing down the study.   <br/>
-                                               <br><br/>
-      When you are ready, press the <b>SPACE BAR</b> to begin with a couple of practice rounds. </div>`,
-  choices: ['spacebar'],
-  post_trial_gap: 500,
-  on_finish: function() {
-    charity_prac_pairs=get_prac_images();
-    charity_real_pairs= get_multichoice_images();
-  
-  } 
-}
-
-
-/** practice choices */
-var fixation1 = {
-  type: 'html-keyboard-response',
-  on_start: () => document.body.style.cursor = 'none',
-  stimulus: '<span id="calibration_dot_instruction"></span>',
-  choices: jsPsych.NO_KEYS,
-  trial_duration: fixation_duration,
-};
-
-
-var charity_prac_choice_count = 0;
-var charity_prac_choice = {
-  timeline: [
-    fixation1,
-    {
-      type: "binary-choice",
-      stimulus: () => charity_prac_pairs[charity_prac_choice_count],
-      choices: ["F", "J"],
-      realOrPrac: false,
-      on_finish: () => charity_prac_choice_count++,
-    }
-  ],
-  loop_function: () => charity_prac_choice_count < 3,
-};
-
-var EnterRealChoice = {
-  type: 'html-keyboard-response',
-  stimulus: `<div> Now you can move on to the real choices. When you are ready, press the <b>SPACE BAR</b> to begin.</div>`,
-  choices: ['spacebar'],
-  post_trial_gap: 500,
-}
-
-
-
-
-
-
-var binary_choice_states = {
-  //set the default 
-  doCalibration: false,
-  calibrationDots: 10,
-  dovalidation: true,
-  validationDots: 2
-};
-
-var validate_counter = 0;
-validationAccuracy = 0.6;
-
-///binary_choice_state_logger and 
-//binary_state_updater is used for triggering the recalibration during the choice task
-function binary_choice_state_logger(finish_data_accuracy) {
-  // ...TODO
-  if (finish_data_accuracy >= validationAccuracy) {
-    binary_choice_states = {
-        doCalibration: false,
-        dovalidation: true,
-        validationDots: 2
-      },
-      validate_counter = 0;
-  }
-  if (finish_data_accuracy < validationAccuracy & validate_counter <= 2) {
-    binary_choice_states = {
-        doCalibration: false,
-        dovalidation: true,
-        validationDots: 2
-      },
-      validate_counter += 1;
-  }
-  if (validate_counter == 3) {
-    binary_choice_states = {
-      //set the default 
-      doCalibration: true,
-      calibrationDots: 12, ///change to 12
-      dovalidation: false,
-    }
-    validate_counter = 0;
-  }
-};
-
-var binary_state_updater = function () {
-  return binary_choice_states;
-};
-
-
-
-/** choices */
-var fixation = {
-  type: "eye-tracking",
-  doInit: false,
- // doCalibration: () => binary_state_updater().doCalibration,  //triggering the recalibration during the choice task
-  doCalibration: false,
-  //calibrationDots: () => binary_state_updater().calibrationDots,  
- // doValidation: () => binary_state_updater().dovalidation,
-  doValidation: true,
- // validationDots: () => binary_state_updater().validationDots,
-  validationDots: 3,
-  validationTol: 130,
-  validationDuration: 2,
-//  calibrationDuration: 5,
-  on_finish: (data) => binary_choice_state_logger(data.accuracy)
-};
-
-
-
-
-
-var if_node1 = {
-  timeline: [fixation],
-  conditional_function: function(){
-      if(Math.round(charity_choice_count%10) == 0){
-          return true;
-      } else {
-          return false;
-      }
-  }
-}
-
-
-var if_node2 = {
-  timeline: [fixation1],
-  conditional_function: function(){
-      if(Math.round(charity_choice_count%10) != 0){
-          return true;
-      } else {
-          return false;
-      }
-  }
-}
-
-
-
-/** real choice task */
-var charity_choice_count = 0;
-var charity_choice1 = {
-  timeline: [ 
-    if_node1,
-    if_node2,
-    {
-      type: "binary-choice",
-      on_start: function() {
-        //console.log(charity_real_pairs)
-      },
-      stimulus: () =>   charity_real_pairs[charity_choice_count],
-      choices: ["F", "J"],
-      on_finish: () => charity_choice_count++,
-    }
-  ],
-  loop_function: () => charity_choice_count < charity_real_pairs.length/2,
-
-};
-
-
-
-var breaktime = {
-  type: "html-keyboard-response",
-  stimulus: `<div>You are halfway done! Now you can take a short break if you want. You can move your head during the break.</br>
-             <br></br>
-             When you are ready to continue the study, press the <b>SPACE BAR</b>.</div>`,
-  choices: ['spacebar'],
-  on_start: function () {
-    webgazer.pause(),
-      webgazer.clearData()
-  },
-  post_trial_gap: 500,
-};
-
-var recalibrationInstruction2 = {
-  type: "html-keyboard-response",
-  on_start: () => webgazer.resume(),
-  stimulus: `<div>We need to redo the calibration and validation before you return to the study.  </br>
-  As before, make sure you stare at each dot until it disappears and make sure you don’t move your head.</br>
-   <br></br>
-   Press the <b>SPACE BAR</b> when you are ready to begin.</div>`,
-  choices: ['spacebar'],
-  post_trial_gap: 500,
-};
-
-
-
-var recalibration2 = {
-  timeline: [
-    recalibrationInstruction2,
-    {
-      type: "eye-tracking",
-      doCalibration: true,
-      calibrationDots: realCaliDot, ///change to 12
-      calibrationDuration: 3,
-      doValidation: true, 
-       validationDots:  8, ///change to 6
-      validationDuration: 2,
-    }
-  ],
-};
-
-
-var charity_choice2 = {
-  timeline: [
-    if_node1,
-    if_node2, // change to fixation
-    {
-      type: "binary-choice",
-      stimulus: () => charity_real_pairs[charity_choice_count],
-      choices: ["F", "J"],
-      on_finish: () => charity_choice_count++,
-    }
-  ],
-  loop_function: () => charity_choice_count < charity_real_pairs.length,
-
-};
-
-
-
-function getRandomInt(min, max) {
-  return Math.floor(Math.random() * (max - min + 1)) + min;
-}
-
-
-// var select_trial = {
-//   type: "",
-//   charity: [],
-//   donation: 5
-// }
-var randomselector = function () {
-  var trials = jsPsych.data.get().filterCustom(function (trial) {
-    return trial.rating > 0  || (trial.trial_type == "binary-choice" && trial.realtrial)
-  })
-  selectedtrialindex = getRandomInt(0, trials.count() - 1);
-  selectedtrial = JSON.parse(trials.json())[selectedtrialindex];
-
-  select_trial.type = selectedtrial.trial_type;
- //console.log(JSON.parse(trials.json())[selectedtrialindex]);
-
-  if (select_trial.type === "image-slider-response") {
-    select_trial.type = "Willingness to Donate"
-    select_trial.donation = selectedtrial.rating;
-    select_trial.charity = selectedtrial.stimulus;
-  } else {
-    select_trial.type = "Donating Preference"
-    select_trial.donation = 5;
-    if (selectedtrial.key_press == 70) {
-      select_trial.charity = selectedtrial.stimulus[0];
-    } else {
-      select_trial.charity = selectedtrial.stimulus[1];
-    }
-  }
-   html = ` <div> One trial from the <b><font color='red'>${select_trial.type}</font></b> task has been selected for donation! </br>
-    The charity you donate to is: </br>
-    <br></br>
-    <img height="300px" width="500px" src="${select_trial.charity}"/> </br>
-     <br></br>
-     We will donate  <b><font color='red'>$${select_trial.donation}</font></b> to this charity on your behalf.</br>
-     <br></br>
-     Thank you for participating! The webcam will turn off when you close the browser tab.</br>
-     Your quiz score is ${(quiz_correct_count/5)*100}, we will add ${quiz_correct_count*10} cents to your final payment.</br>
-     Your survey code is: ${makeSurveyCode('success')}
-     </div>`;
- return html
-}
 var prestart = {
   type: "html-keyboard-response",
 //    on_start: () => ensureWebcam(),
   stimulus: `<div>Now we gonna collect your eye data
   <br></br>
-  Press the <b>B</b> when you are ready to begin.</div>`,
+  Press the <b>B</b> when you are ready to begin.
+  <br></br>
+  Press <b>P</b> when you want to pause.</div>`,
   choices: ['b'],
-  post_trial_gap: null,
-};
-
-
-var startrecord = {
-  type: "html-keyboard-response",
-  stimulus: `<div>press space to continue</div>`,
-  choices: ['spacebar'],
   post_trial_gap: null,
 };
 
 
 var showstim = {
     type: "binary-choice",
-    stimulus:[`<div>+</div>`,`<div>N</div>`],
-    prompt: `<div>Now it's time for a rest
-    <br></br>
-    Press the <b>P</b> when you wanna pause recording.</div>`,
+    stimulus:[exp_images[0],exp_images[1]],
     choices: ["P", "N"],
     doEyeTracking: true,
     post_trial_gap: null
@@ -692,16 +272,7 @@ var indicate_pause = {
 
 
 
-// // `<p>You have completed the task. The webcam will be closed when you close our browser.</p>`
-//  var end = {
-//    on_start: () => closeFullscreen(),
-//   type: "html-keyboard-response",
-//   stimulus: `<div>Thank you for your participation! You can close the browser to end the experiment now. </br>
-//                   The webcam will turn off when you close the browser. </br>
-//                   Your survey code is: ${makeSurveyCode('success')}. </br>
-//                   We will send you $7 as your participant fee soon! </br> </div>`,
-  
-//  };
+
 
 /* Close fullscreen */
 function closeFullscreen() {
@@ -764,17 +335,9 @@ function startExperiment() {
       fullscreenEnter,
       eyeTrackingInstruction1 ,eyeTrackingInstruction2 , inital_eye_calibration ,
       prestart,
-     // startrecord,
       showstim,
       indicate_pause,
-  //    experimentOverview,
-   //    ratingOverview,  ratings,
-    //  choiceOverview, recalibration,choiceInstructionReinforce,
-     // charity_prac_choice,
-     //EnterRealChoice, charity_choice1, breaktime, 
-      //recalibration2, charity_choice2, 
-   //  slideshowQuizOverview,slideshowQuiz,postQuizScreen,
-    success_guard
+      success_guard
     ],
     on_trial_finish: function () {
       trialcounter = jsPsych.data.get().count();
@@ -800,16 +363,3 @@ function startExperiment() {
   });
 };
 
-
-// function saveData() {
-//   var xhr = new XMLHttpRequest();
-//   xhr.open('POST', 'write_data.php'); // change 'write_data.php' to point to php script.
-//   xhr.setRequestHeader('Content-Type', 'application/json');
-//   xhr.onload = function () {
-//     if (xhr.status == 200) {
-//       var response = JSON.parse(xhr.responseText);
-//       //   console.log(response.success);
-//     }
-//   };
-//   xhr.send(jsPsych.data.get().json());
-// }
