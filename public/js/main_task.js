@@ -6,7 +6,7 @@ const nchoices = 1;
 const fixation_duration = 500;
 const nprac = 3;
 const nImageInst = 2;
-const realCaliDot = 13;
+const realCaliDot = 15;
 
 
 var subject_id = jsPsych.randomization.randomID(7);
