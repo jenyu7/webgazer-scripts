@@ -377,9 +377,11 @@ jsPsych.plugins["eye-tracking"] = (function () {
             callback(err);
             return;
           } 
-          //webgazer.setRegression('ridge');
-          webgazer.setRegression('threadedRidge');
+          webgazer.setRegression('ridge');
+          //webgazer.setRegression('weightedridge');
+          //webgazer.setRegression('threadedRidge');
           //webgazer.params.showVideo = trial.doVideo;
+          //webgazer.setTracker("TFFacemesh"); 
 
        //   webgazer.params.showFaceOverlay = false;
           var onkeyup = function(e) {
